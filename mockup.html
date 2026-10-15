@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X 养号助手 · 界面原型</title>
+<style>
+  :root{
+    --bg:#000; --panel:#16181c; --panel2:#1c1f23; --border:#2f3336;
+    --text:#e7e9ea; --muted:#71767b; --blue:#1d9bf0; --green:#00ba7c;
+    --red:#f4212e; --yellow:#ffd400; --purple:#7856ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#0a0a0b;color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    padding:32px;display:flex;flex-direction:column;gap:40px;align-items:center;
+  }
+  h1{font-size:22px;font-weight:800}
+  h1 small{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:6px}
+  .board{display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;gap:10px}
+  .label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .label b{color:var(--text)}
+
+  /* ---------- 通用组件 ---------- */
+  .win{background:var(--bg);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+  .row{display:flex;align-items:center;gap:10px}
+  .between{justify-content:space-between}
+  .muted{color:var(--muted)}
+  .pill{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600}
+  .pill.green{background:rgba(0,186,124,.15);color:var(--green)}
+  .pill.yellow{background:rgba(255,212,0,.15);color:var(--yellow)}
+  .pill.blue{background:rgba(29,155,240,.15);color:var(--blue)}
+  .pill.red{background:rgba(244,33,46,.15);color:var(--red)}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .dot.g{background:var(--green);box-shadow:0 0 8px var(--green)}
+  .dot.y{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1d9bf0,#7856ff);flex:none}
+  .avatar.sm{width:28px;height:28px}
+  .switch{width:40px;height:22px;border-radius:999px;background:var(--green);position:relative;flex:none}
+  .switch::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+  .switch.off{background:#3a3d41}
+  .switch.off::after{left:3px;right:auto}
+  .btn{background:var(--blue);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+  .btn.sm{padding:6px 12px;font-size:12px}
+  .bar{height:6px;border-radius:999px;background:#2a2d31;overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+
+  /* ---------- ① Popup ---------- */
+  .popup{width:380px}
+  .popup .head{padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .logo{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+  .logo .mark{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#1d9bf0,#7856ff);display:grid;place-items:center;font-size:13px;color:#fff}
+  .acct{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .acct .name{font-weight:700;font-size:14px}
+  .acct .handle{font-size:12px;color:var(--muted)}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);padding:14px 16px;gap:8px;border-bottom:1px solid var(--border)}
+  .stat{background:var(--panel);border-radius:12px;padding:10px 8px;text-align:center}
+  .stat .n{font-size:18px;font-weight:800}
+  .stat .k{font-size:11px;color:var(--muted);margin-top:3px}
+  .task{padding:14px 16px;border-bottom:1px solid var(--border)}
+  .task .t1{font-size:13px;margin-bottom:8px}
+  .task .t1 b{color:var(--blue)}
+  .task .pct{font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between}
+  .modes{padding:14px 16px;display:flex;gap:8px;border-bottom:1px solid var(--border)}
+  .mode{flex:1;text-align:center;font-size:12px;font-weight:700;padding:9px;border-radius:10px;border:1px solid var(--border);color:var(--muted);cursor:pointer}
+  .mode.on{background:rgba(29,155,240,.12);border-color:var(--blue);color:var(--blue)}
+  .popup .foot{padding:14px 16px;display:flex;gap:8px}
+  .popup .foot .btn{flex:1;text-align:center}
+
+  /* ---------- ② 控制台 ---------- */
+  .panel{width:360px;height:640px;display:flex;flex-direction:column}
+  .panel .head{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .tabs{display:flex;border-bottom:1px solid var(--border)}
+  .tab{flex:1;text-align:center;padding:11px;font-size:13px;color:var(--muted);font-weight:600;cursor:pointer;border-bottom:2px solid transparent}
+  .tab.on{color:var(--text);border-bottom-color:var(--blue)}
+  .scroll{flex:1;overflow:auto;padding:6px 0}
+  .qitem{padding:11px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid #1c1f23}
+  .qitem .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px;flex:none;background:var(--panel)}
+  .qitem .txt{font-size:12.5px;line-height:1.5}
+  .qitem .txt .k{color:var(--blue);font-weight:600}
+  .qitem .txt .tm{color:var(--muted);font-size:11px}
+  .log{padding:7px 16px;font-size:12px;font-family:ui-monospace,Consolas,monospace;line-height:1.55;border-bottom:1px solid #14171a}
+  .log .tm{color:var(--muted);margin-right:6px}
+  .log .ok{color:var(--green)} .log .warn{color:var(--yellow)} .log .err{color:var(--red)} .log .info{color:var(--blue)}
+  .panel .foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+
+  /* ---------- ④ 浮层 ---------- */
+  .overlay-demo{background:#0f1419;border:1px solid var(--border);border-radius:14px;padding:24px;width:380px;position:relative;min-height:220px}
+  .fake-tweet{border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;gap:10px;opacity:.5}
+  .fake-tweet .lines{flex:1}
+  .fl{height:9px;border-radius:4px;background:#2a2d31;margin-bottom:8px}
+  .capsule{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(29,155,240,.95);color:#fff;font-size:12.5px;font-weight:600;padding:9px 16px;border-radius:999px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 24px rgba(29,155,240,.4)}
+  .spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------- ③ 设置页 ---------- */
+  .options{width:840px;display:flex;min-height:560px}
+  .opts-nav{width:200px;border-right:1px solid var(--border);padding:16px 10px;flex:none}
+  .opts-nav .it{padding:10px 12px;border-radius:10px;font-size:13.5px;color:var(--muted);font-weight:600;margin-bottom:2px;cursor:pointer}
+  .opts-nav .it.on{background:var(--panel);color:var(--text)}
+  .opts-body{flex:1;padding:22px 26px;overflow:auto}
+  .opts-body h2{font-size:18px;margin-bottom:4px}
+  .opts-body .sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+  .field{margin-bottom:18px}
+  .field>label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+  .field .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .input{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px}
+  .input.mono{font-family:ui-monospace,Consolas,monospace}
+  .inline{display:flex;gap:12px}
+  .inline>*{flex:1}
+  .taglist{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .tag{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:12.5px;display:flex;align-items:center;gap:7px}
+  .tag .x{color:var(--muted);cursor:pointer}
+  .slider{width:100%;accent-color:var(--blue)}
+  .kv{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #1c1f23}
+  .kv .l{font-size:13.5px} .kv .l small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+  .seg{display:flex;background:var(--panel);border-radius:10px;padding:3px}
+  .seg span{padding:6px 14px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .seg span.on{background:var(--blue);color:#fff}
+</style>
+</head>
+<body>
+
+<h1>X 养号助手 · 界面原型
+  <small>MV3 浏览器插件 — 4 个界面布局预览(静态设计稿,纯前端展示,无功能)</small>
+</h1>
+
+<div class="board">
+
+  <!-- ① Popup -->
+  <div class="col">
+    <div class="label">① 弹窗 Popup · <b>点图标弹出</b></div>
+    <div class="win popup">
+      <div class="head">
+        <div class="logo"><span class="mark">𝕏</span>养号助手</div>
+        <div class="row"><span class="dot g"></span><div class="switch"></div></div>
+      </div>
+      <div class="acct">
+        <div class="avatar"></div>
+        <div style="flex:1">
+          <div class="name">深夜的猫</div>
+          <div class="handle">@nightcat_dev · 运行中</div>
+        </div>
+        <span class="pill green">已养 12 天</span>
+      </div>
+      <div class="grid4">
+        <div class="stat"><div class="n">142</div><div class="k">浏览</div></div>
+        <div class="stat"><div class="n">38</div><div class="k">点赞</div></div>
+        <div class="stat"><div class="n">9</div><div class="k">评论</div></div>
+        <div class="stat"><div class="n">4</div><div class="k">关注</div></div>
+      </div>
+      <div class="task">
+        <div class="t1">正在评论 <b>@AI_weekly</b> 的推文…</div>
+        <div class="bar"><i style="width:62%"></i></div>
+        <div class="pct"><span>生成评论中 (中转站)</span><span>62%</span></div>
+      </div>
+      <div class="modes">
+        <div class="mode">半自动 · 审后发</div>
+        <div class="mode on">全自动</div>
+      </div>
+      <div class="foot">
+        <button class="btn ghost">打开控制台</button>
+        <button class="btn">设置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 控制台 -->
+  <div class="col">
+    <div class="label">② 控制台 · <b>X 页面右侧滑出</b></div>
+    <div class="win panel">
+      <div class="head">
+        <div class="row"><span class="dot g"></span><b style="font-size:14px">运行中</b></div>
+        <span class="pill blue">队列 6 · 今日 51/80</span>
+      </div>
+      <div class="tabs">
+        <div class="tab on">任务队列</div>
+        <div class="tab">实时日志</div>
+        <div class="tab">关键词</div>
+      </div>
+      <div class="scroll">
+        <div class="qitem"><div class="ic">💬</div><div class="txt"><span class="k">评论</span> @AI_weekly<br><span class="tm">2 分钟前 · 生成中…</span></div><span class="pill yellow">进行中</span></div>
+        <div class="qitem"><div class="ic">❤️</div><div class="txt"><span class="k">点赞</span> #独立开发者 第 3 条<br><span class="tm">排队中</span></div><span class="pill blue">待执行</span></div>
+        <div class="qitem"><div class="ic">➕</div><div class="txt"><span class="k">关注</span> @indie_hacker<br><span class="tm">排队中</span></div><span class="pill blue">待执行</span></div>
+        <div class="qitem"><div class="ic">🖼️</div><div class="txt"><span class="k">配图评论</span> "AI 工具"<br><span class="tm">排队中 · 需生图</span></div><span class="pill blue">待执行</span></div>
+        <div class="qitem"><div class="ic">💬</div><div class="txt"><span class="k">评论</span> @grow_tips<br><span class="tm">已完成</span></div><span class="pill green">成功</span></div>
+        <div class="qitem"><div class="ic">❤️</div><div class="txt"><span class="k">点赞</span> #buildinpublic<br><span class="tm">已完成</span></div><span class="pill green">成功</span></div>
+      </div>
+      <div class="foot">
+        <button class="btn ghost sm" style="flex:1">⏸ 暂停</button>
+        <button class="btn ghost sm" style="flex:1">🧹 清空队列</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 浮层 -->
+  <div class="col">
+    <div class="label">④ 页面浮层 · <b>注入 X 页面</b></div>
+    <div class="win overlay-demo">
+      <div class="fake-tweet">
+        <div class="avatar sm"></div>
+        <div class="lines">
+          <div class="fl" style="width:40%"></div>
+          <div class="fl" style="width:90%"></div>
+          <div class="fl" style="width:70%"></div>
+        </div>
+      </div>
+      <div class="capsule"><span class="spinner"></span> 正在评论 @AI_weekly…</div>
+    </div>
+    <div class="label" style="margin-top:14px">日志流示例</div>
+    <div class="win" style="width:380px;padding:6px 0">
+      <div class="log"><span class="tm">14:02:11</span><span class="info">[扫描]</span> 匹配关键词 "AI 工具" ×3</div>
+      <div class="log"><span class="tm">14:02:13</span><span class="ok">[生成]</span> 中转站返回评论 (1.2s)</div>
+      <div class="log"><span class="tm">14:02:15</span><span class="ok">[发布]</span> 评论成功 → @AI_weekly</div>
+      <div class="log"><span class="tm">14:02:20</span><span class="warn">[限速]</span> 随机等待 47s</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ③ 设置页 -->
+<div class="col" style="width:100%;align-items:center">
+  <div class="label" style="align-self:flex-start">③ 设置页 Options · <b>独立标签页,全宽</b></div>
+  <div class="win options">
+    <div class="opts-nav">
+      <div class="it on">🔌 AI 接口</div>
+      <div class="it">⚙️ 行为参数</div>
+      <div class="it">🔑 关键词</div>
+      <div class="it">🚫 黑名单</div>
+      <div class="it">🧩 高级</div>
+    </div>
+    <div class="opts-body">
+      <h2>AI 接口(中转站)</h2>
+      <div class="sub">兼容 OpenAI 格式的任意中转站,后台加密存储,页面不可见</div>
+
+      <div class="field">
+        <label>Base URL</label>
+        <input class="input mono" value="https://api.your-proxy.com/v1">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input class="input mono" type="password" value="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
+        <div class="hint">仅保存在本机浏览器,不会上传</div>
+      </div>
+      <div class="field inline">
+        <div>
+          <label>文本模型(写评论)</label>
+          <input class="input mono" value="gpt-4o-mini">
+        </div>
+        <div>
+          <label>生图模型</label>
+          <input class="input mono" value="dall-e-3 / flux">
+        </div>
+      </div>
+      <div class="field">
+        <label>评论风格</label>
+        <div class="taglist">
+          <div class="tag">真诚互动 <span class="x">×</span></div>
+          <div class="tag">提问式 <span class="x">×</span></div>
+          <div class="tag">简短共鸣 <span class="x">×</span></div>
+          <div class="tag" style="border-style:dashed;color:var(--muted)">+ 添加</div>
+        </div>
+      </div>
+      <div class="row between" style="margin-top:24px">
+        <button class="btn ghost">测试连接</button>
+        <button class="btn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 行为参数预览 -->
+<div class="col" style="width:100%;align-items:center">
+  <div class="label" style="align-self:flex-start">③-b 设置页 · <b>行为参数(风控护栏)</b></div>
+  <div class="win options">
+    <div class="opts-nav">
+      <div class="it">🔌 AI 接口</div>
+      <div class="it on">⚙️ 行为参数</div>
+      <div class="it">🔑 关键词</div>
+      <div class="it">🚫 黑名单</div>
+      <div class="it">🧩 高级</div>
+    </div>
+    <div class="opts-body">
+      <h2>行为参数</h2>
+      <div class="sub">这些是决定"像人还是像机器"的关键,建议保守设置</div>
+
+      <div class="field">
+        <label>每日动作上限</label>
+        <input class="slider" type="range" min="0" max="200" value="80">
+        <div class="hint">浏览 300 · 点赞 60 · 评论 15 · 关注 8</div>
+      </div>
+      <div class="field inline">
+        <div><label>动作间隔(秒)</label><input class="input" value="45 ~ 180"></div>
+        <div><label>活跃时段</label><input class="input" value="09:00 ~ 23:30"></div>
+      </div>
+      <div class="kv">
+        <div class="l">评论模式<small>审后发更安全,全自动更快</small></div>
+        <div class="seg"><span>半自动</span><span class="on">全自动</span></div>
+      </div>
+      <div class="kv">
+        <div class="l">评论带图<small>用中转站生图,提升真实感</small></div>
+        <div class="seg"><span>关闭</span><span class="on">按概率</span><span>总是</span></div>
+      </div>
+      <div class="kv">
+        <div class="l">模拟人类滚动 / 停留<small>随机滚动、停顿、悬停</small></div>
+        <div class="switch"></div>
+      </div>
+      <div class="kv" style="border:none">
+        <div class="l">遇到验证码自动暂停<small>检测到风控立即停下并通知</small></div>
+        <div class="switch"></div>
+      </div>
+      <div class="row between" style="margin-top:20px">
+        <button class="btn ghost">恢复默认</button>
+        <button class="btn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="muted" style="font-size:12px;text-align:center;max-width:700px;line-height:1.7">
+  这是纯静态设计稿(单个 HTML 文件),用来对齐布局和交互,不包含任何自动化逻辑。<br>
+  你确认布局后,我再按这个稿子去实现真正的插件功能。
+</p>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X 养号助手</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { width: 372px; max-height: 600px; overflow-y: auto; margin: 0; padding: 14px; box-sizing: border-box; background: #101214; color: #f1f3f5; }
+    h1 { margin: 0; font-size: 15px; }
+    h2 { margin: 16px 0 7px; font-size: 12px; color: #8b949e; font-weight: 600; letter-spacing: .04em; display: flex; justify-content: space-between; }
+    h2 em { font-style: normal; font-weight: 500; color: #6b7280; }
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .switch { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #b6c2cd; }
+    .switch input { width: 16px; height: 16px; accent-color: #1d9bf0; }
+    .acct { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px; border-radius: 9px; background: #171a1f; border: 1px solid #262c33; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; flex: none; background: linear-gradient(135deg,#1d9bf0,#7856ff); object-fit: cover; }
+    .acct-info { flex: 1; min-width: 0; }
+    .acct-name { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .acct-handle { font-size: 11px; color: #8b949e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pill { font-size: 10.5px; padding: 3px 9px; border-radius: 999px; background: rgba(29,155,240,.15); color: #1d9bf0; font-weight: 600; flex: none; }
+    .status { margin: 10px 0 0; padding: 9px 10px; border-radius: 7px; background: #18232b; color: #b9dfff; font-size: 12px; line-height: 1.45; }
+    .status.error { background: #321c20; color: #ffb7bd; }
+    .status.warn { background: #302711; color: #ffd699; }
+    .task { margin-top: 9px; padding: 10px; border-radius: 8px; background: #171a1f; border: 1px solid #262c33; }
+    .task-title { display: flex; align-items: center; gap: 7px; font-size: 12.5px; margin-bottom: 8px; }
+    .spinner { width: 12px; height: 12px; flex: none; border-radius: 50%; border: 2px solid rgba(29,155,240,.3); border-top-color: #1d9bf0; animation: spin 900ms linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .bar { height: 5px; border-radius: 999px; background: #2a2d31; overflow: hidden; }
+    .bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#1d9bf0,#7856ff); transition: width .4s ease; }
+    .task-meta { display: flex; justify-content: space-between; margin-top: 5px; font-size: 10.5px; color: #8b949e; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .cell { padding: 8px 6px; border-radius: 7px; background: #171a1f; border: 1px solid #262c33; text-align: center; }
+    .cell b { display: block; font-size: 16px; }
+    .cell span { font-size: 10px; color: #8b949e; }
+    .row { display: flex; gap: 6px; margin-top: 7px; }
+    .row > * { flex: 1; }
+    button { border: 0; border-radius: 6px; padding: 8px 10px; background: #1d9bf0; color: #fff; cursor: pointer; font: inherit; font-weight: 600; font-size: 12px; }
+    button.secondary { background: #28323c; }
+    button.tiny { padding: 5px 8px; font-size: 11px; font-weight: 500; flex: none; }
+    button:disabled { opacity: .5; cursor: default; }
+    .seg { display: flex; border: 1px solid #30363d; border-radius: 7px; overflow: hidden; }
+    .seg button { flex: 1; border-radius: 0; background: #171a1f; color: #b6c2cd; font-weight: 500; }
+    .seg button.on { background: #1d9bf0; color: #fff; font-weight: 600; }
+    .list { margin-top: 7px; }
+    .item { padding: 7px 9px; margin-bottom: 5px; border: 1px solid #262c33; border-radius: 7px; background: #171a1f; font-size: 11px; }
+    .item-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .item-head b { font-weight: 600; font-size: 12px; }
+    .item-head span { color: #8b949e; font-size: 10px; }
+    .item-text { margin-top: 4px; color: #b6c2cd; line-height: 1.45; overflow-wrap: anywhere; }
+    .item-actions { display: flex; gap: 6px; margin-top: 6px; }
+    .empty { color: #6b7280; font-size: 11px; padding: 6px 0; }
+    .log { display: flex; gap: 6px; font-size: 11px; line-height: 1.5; color: #b6c2cd; }
+    .log i { font-style: normal; color: #6b7280; flex: none; }
+    .log u { text-decoration: none; font-weight: 700; flex: none; }
+    .log.success u { color: #22c55e; }
+    .log.error u { color: #ef4444; }
+    .log.warn u { color: #f59e0b; }
+    .log.info u { color: #1d9bf0; }
+    .log em { font-style: normal; overflow-wrap: anywhere; }
+    label.field { display: block; margin: 8px 0 4px; font-size: 11px; color: #8b949e; }
+    input, select { width: 100%; box-sizing: border-box; border: 1px solid #30363d; border-radius: 6px; background: #171a1f; color: #f1f3f5; padding: 7px 8px; font: inherit; font-size: 12px; }
+    .hint { margin-top: 6px; color: #6b7280; font-size: 10.5px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <h1>X 养号助手</h1>
+    <label class="switch"><input id="enabled" type="checkbox">总开关</label>
+  </div>
+
+  <div class="acct">
+    <img id="acctAvatar" class="avatar" alt="">
+    <div class="acct-info">
+      <div id="acctName" class="acct-name">未连接 X 页面</div>
+      <div id="acctHandle" class="acct-handle">请先打开并登录 x.com</div>
+    </div>
+    <span id="acctDays" class="pill">—</span>
+  </div>
+
+  <div id="status" class="status">正在读取状态…</div>
+
+  <div id="taskBox" class="task" hidden>
+    <div class="task-title"><span class="spinner"></span><span id="taskLabel">—</span></div>
+    <div class="bar"><i id="taskBar" style="width:0%"></i></div>
+    <div class="task-meta"><span id="taskStage">—</span><span id="taskPercent">0%</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="cell"><b id="statBrowse">0</b><span>浏览</span></div>
+    <div class="cell"><b id="statLike">0</b><span>点赞</span></div>
+    <div class="cell"><b id="statReply">0</b><span>评论</span></div>
+    <div class="cell"><b id="statFollow">0</b><span>关注</span></div>
+  </div>
+
+  <label class="switch" style="margin-top:10px"><input id="dryRun" type="checkbox">演练模式（只走流程，不真的提交）</label>
+
+  <div class="row">
+    <button id="runNow">立即执行一条</button>
+    <button id="scanNow" class="secondary">扫描补队列</button>
+  </div>
+  <div class="row">
+    <button id="openPanel" class="secondary">打开控制台</button>
+    <button id="openOptions" class="secondary">设置</button>
+  </div>
+  <div class="row">
+    <button id="clearQueue" class="secondary">清空队列</button>
+  </div>
+
+  <h2>队列 <em id="pendingCount">0</em></h2>
+  <div id="queueList" class="list"><div class="empty">队列为空</div></div>
+
+  <h2>日志</h2>
+  <div id="logs" class="list"><div class="empty">暂无日志</div></div>
+  <div class="hint">完整日志（含帖子地址、分页和筛选）在设置页的「日志」分区。</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

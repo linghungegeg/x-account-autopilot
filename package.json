@@ -1,0 +1,14 @@
+{
+  "name": "x-nurture-helper",
+  "version": "0.6.1",
+  "private": true,
+  "description": "Chrome MV3 扩展：在已登录的 X 页面按队列和护栏自动完成搜索、评论、点赞、关注。",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/guardrails.test.mjs tests/store.test.mjs tests/image.test.mjs tests/plan.test.mjs tests/wiring.test.mjs",
+    "check": "node --check src/lib/guardrails.js && node --check src/lib/store.js && node --check src/lib/image.js && node --check src/lib/logs.js && node --check src/background/service-worker.js && node --check src/content/x-content.js && node --check src/popup/popup.js && node --check src/options/options.js && node --check probe/cdp.js && node --check probe/x-probe.js && node --check scripts/make-icons.mjs && node --check scripts/audit-selectors.mjs && node --check scripts/package.mjs",
+    "audit:selectors": "node scripts/audit-selectors.mjs",
+    "package": "node scripts/package.mjs",
+    "icons": "node scripts/make-icons.mjs"
+  }
+}

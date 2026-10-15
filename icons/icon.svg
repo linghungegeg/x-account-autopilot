@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="X 养号助手">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d9bf0"/>
+      <stop offset="1" stop-color="#7856ff"/>
+    </linearGradient>
+  </defs>
+  <!-- 圆角方块底 -->
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#bg)"/>
+  <!-- X 字形 -->
+  <path d="M40 40 L88 88 M88 40 L40 88"
+        stroke="#ffffff" stroke-width="14" stroke-linecap="round" fill="none"/>
+</svg>

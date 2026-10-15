@@ -1,0 +1,14 @@
+.chrome-debug/
+.chrome-debug-login/
+probe/result*.json
+probe/controls-*.json
+probe/*.txt
+_codex_thread_*.txt
+node_modules/
+package-lock.json
+dist/*
+!dist/x-nurture-helper-0.6.1.zip
+
+# Chrome 调试用的 profile 目录（体积大、内容不稳定，不入库）
+.chrome-test/
+.chrome-debug-login/
